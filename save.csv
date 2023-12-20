@@ -1,0 +1,5 @@
+id_row	,name,id,major,year,time,status
+1,Bill Gate, 190212332,Security,4,22:38:01,come
+2,Tran Quoc Cuong, 20520423,E-Com,4,22:38:04,come
+3,Bill Gate, 190212332,Security,4,22:38:11,go
+4,Tran Quoc Cuong, 20520423,E-Com,4,22:38:14,go
