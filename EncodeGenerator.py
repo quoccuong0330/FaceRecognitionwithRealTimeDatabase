@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import cv2
 import pickle
 import face_recognition
@@ -8,27 +10,45 @@ from firebase_admin import credentials
 from firebase_admin import db
 from firebase_admin import storage
 
+os.chdir('/Users/macos/PythonProject/FaceRecognitionwithRealTimeDatabase')
+
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': "https://facerecognitionrealtime-674b4-default-rtdb.asia-southeast1.firebasedatabase.app/",
     'storageBucket': "facerecognitionrealtime-674b4.appspot.com"
 
 })
-
+ref = db.reference('Peoples')
 
 # Import people image
-folderPath = 'Image'
+folderPath = 'Images'
 pathList = os.listdir(folderPath)
 imageList = []
-peopleIds = []
+peoples = ref.get('id')
+peopleId = []
+
+# for id in peoples:
+#     for i in id:
+#         peopleId.append(i)
+
+print(peopleId)
+
 for path in pathList:
+    if path == '.DS_Store':
+        continue
     imageList.append(cv2.imread(os.path.join(folderPath, path)))
-    peopleIds.append(os.path.splitext(path)[0])
+    file = Path(path).stem
+    if file == '.DS_Store':
+        continue
+    peopleId.append(file)
+    print(file)
 
     fileName = f'{folderPath}/{path}'
     bucket = storage.bucket()
     blob = bucket.blob(fileName)
     blob.upload_from_filename(fileName)
+
+
 # for image in imageModeList:
 #     image.reshape((654,436,3))
 def findEncodings(imageList):
@@ -44,11 +64,11 @@ def findEncodings(imageList):
 print("Encoding Started")
 # Create array encodeImage and ID
 encodeListKnow = findEncodings(imageList)
-encodeListKnowWithIds = [encodeListKnow, peopleIds]
+encodeListKnowWithIds = [encodeListKnow, peopleId]
 print(encodeListKnowWithIds)
 print("Encoding Complete")
 
 file = open('EncodeFile.p', 'wb')
-pickle.dump(encodeListKnowWithIds,file)
+pickle.dump(encodeListKnowWithIds, file)
 file.close()
 print("file saved")
